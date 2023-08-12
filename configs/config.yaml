@@ -8,7 +8,7 @@ server:
 data:
   database:
     driver: mysql
-    source: root:root@tcp(127.0.0.1:3306)/test
+    source: root:for.nothing@tcp(124.70.190.134:3306)/kubecit
   redis:
     addr: 127.0.0.1:6379
     read_timeout: 0.2s
