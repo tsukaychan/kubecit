@@ -19,6 +19,7 @@ type User struct {
 // UserRepo is a Greater repo.
 type UserRepo interface {
 	Register(context.Context, *User) (*User, error)
+	List(ctx context.Context) ([]*User, error)
 }
 
 // UserUsecase is a User usecase.
@@ -36,6 +37,14 @@ func NewUserUsecase(repo UserRepo, logger log.Logger) *UserUsecase {
 
 func (u *UserUsecase) Register(ctx context.Context, user *User) (*User, error) {
 	userResult, err := u.repo.Register(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+	return userResult, nil
+}
+
+func (u *UserUsecase) List(ctx context.Context) ([]*User, error) {
+	userResult, err := u.repo.List(ctx)
 	if err != nil {
 		return nil, err
 	}

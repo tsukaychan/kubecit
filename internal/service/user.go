@@ -31,3 +31,20 @@ func (s *UserService) UserRegister(ctx context.Context, in *v1.UserRegisterReque
 	}
 	return &v1.UserRegisterResponse{Result: "success"}, nil
 }
+
+func (s *UserService) UserList(ctx context.Context, in *v1.Empty) (*v1.UserListResponse, error) {
+	userList, err := s.uc.List(ctx)
+	if err != nil {
+		return nil, err
+	}
+	userRes := []*v1.User{}
+	for _, user := range userList {
+		userRes = append(userRes, &v1.User{
+			Username: user.Username,
+			Password: user.Password,
+		})
+	}
+	return &v1.UserListResponse{
+		Users: userRes,
+	}, nil
+}

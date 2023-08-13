@@ -4,14 +4,26 @@
 openapi: 3.0.3
 info:
     title: UserService API
-    description: The greeting service definition.
+    description: The user service definition.
     version: 0.0.1
 paths:
+    /user:
+        get:
+            tags:
+                - UserService
+            operationId: UserService_UserList
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/user.v1.UserListResponse'
     /user/register:
         post:
             tags:
                 - UserService
-            description: Sends a greeting
+            description: user register
             operationId: UserService_UserRegister
             requestBody:
                 content:
@@ -28,6 +40,20 @@ paths:
                                 $ref: '#/components/schemas/user.v1.UserRegisterResponse'
 components:
     schemas:
+        user.v1.User:
+            type: object
+            properties:
+                username:
+                    type: string
+                password:
+                    type: string
+        user.v1.UserListResponse:
+            type: object
+            properties:
+                users:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/user.v1.User'
         user.v1.UserRegisterRequest:
             type: object
             properties:

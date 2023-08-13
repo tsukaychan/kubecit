@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-http v2.7.0
 // - protoc             v3.19.1
-// source: helloworld/v1/greeter.proto
+// source: helloworld/v1/user.proto
 
 package v1
 
@@ -19,16 +19,19 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
+const OperationUserServiceUserList = "/user.v1.UserService/UserList"
 const OperationUserServiceUserRegister = "/user.v1.UserService/UserRegister"
 
 type UserServiceHTTPServer interface {
-	// UserRegister Sends a greeting
+	UserList(context.Context, *Empty) (*UserListResponse, error)
+	// UserRegister user register
 	UserRegister(context.Context, *UserRegisterRequest) (*UserRegisterResponse, error)
 }
 
 func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
 	r := s.Route("/")
 	r.POST("/user/register", _UserService_UserRegister0_HTTP_Handler(srv))
+	r.GET("/user", _UserService_UserList0_HTTP_Handler(srv))
 }
 
 func _UserService_UserRegister0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
@@ -53,7 +56,27 @@ func _UserService_UserRegister0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx
 	}
 }
 
+func _UserService_UserList0_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in Empty
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserServiceUserList)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UserList(ctx, req.(*Empty))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*UserListResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
 type UserServiceHTTPClient interface {
+	UserList(ctx context.Context, req *Empty, opts ...http.CallOption) (rsp *UserListResponse, err error)
 	UserRegister(ctx context.Context, req *UserRegisterRequest, opts ...http.CallOption) (rsp *UserRegisterResponse, err error)
 }
 
@@ -63,6 +86,19 @@ type UserServiceHTTPClientImpl struct {
 
 func NewUserServiceHTTPClient(client *http.Client) UserServiceHTTPClient {
 	return &UserServiceHTTPClientImpl{client}
+}
+
+func (c *UserServiceHTTPClientImpl) UserList(ctx context.Context, in *Empty, opts ...http.CallOption) (*UserListResponse, error) {
+	var out UserListResponse
+	pattern := "/user"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUserServiceUserList))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
 }
 
 func (c *UserServiceHTTPClientImpl) UserRegister(ctx context.Context, in *UserRegisterRequest, opts ...http.CallOption) (*UserRegisterResponse, error) {
