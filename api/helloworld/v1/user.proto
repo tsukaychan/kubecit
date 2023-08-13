@@ -9,17 +9,31 @@ option java_multiple_files = true;
 option java_package = "dev.kratos.api.user.v1";
 option java_outer_classname = "UserProtoV1";
 
-// The greeting service definition.
+// The user service definition.
 service UserService {
-  // Sends a greeting
+  // user register
   rpc UserRegister(UserRegisterRequest) returns (UserRegisterResponse) {
     option (google.api.http) = {
       post: "/user/register"
       body: "*"
     };
   }
+
+  rpc UserList(Empty) returns (UserListResponse) {
+    option (google.api.http) = {
+      get: "/user"
+    };
+  }
 }
 
+message Empty {}
+message User {
+  string username = 1;
+  string password = 2;
+}
+message UserListResponse {
+  repeated User users = 1;
+}
 message UserRegisterRequest {
   string username = 1;
   string password = 2;
